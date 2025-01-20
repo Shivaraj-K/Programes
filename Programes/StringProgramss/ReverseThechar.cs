@@ -16,7 +16,7 @@ namespace Programes.StringProgramss
             //for(int i=a.Length-1; i>=0; i--)
             //{
             //    Console.WriteLine(a[i]);
-
+//Console.WriteLine("Changed in github");
             //}
 
             for (int i = a.Length - 1; i >= 0; i--)
