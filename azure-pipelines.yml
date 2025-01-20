@@ -1,18 +1,34 @@
-# ASP.NET Core
-# Build and test ASP.NET Core projects targeting .NET Core.
-# Add steps that run tests, create a NuGet package, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
-
 trigger:
-- master
+- master # Trigger pipeline on changes to the master branch. Change this if needed.
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'windows-latest' # Use Windows since Selenium tests may require a browser.
 
 variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: DotNetCoreCLI@2
+# Step 1: Install .NET SDK
+- task: UseDotNet@2
   inputs:
-    command: 'test'
+    packageType: 'sdk'
+    version: '6.x' # Replace with the version of .NET Core you are using.
+
+# Step 2: Restore NuGet packages
+- script: dotnet restore
+  displayName: 'Restore NuGet Packages'
+
+# Step 3: Build the solution
+- script: dotnet build --configuration $(buildConfiguration)
+  displayName: 'Build Solution'
+
+# Step 4: Run NUnit tests
+- script: dotnet test --configuration $(buildConfiguration) --no-build --logger trx
+  displayName: 'Run Tests'
+
+# Step 5: Publish test results
+- task: PublishTestResults@2
+  inputs:
+    testResultsFiles: '**/*.trx' # Look for test result files.
+    testRunTitle: 'NUnit Test Results'
+
